@@ -1,0 +1,25 @@
+.checklist-collapse-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 4px;
+  margin: 0 4px;
+  border-radius: 3px;
+  color: var(--ds-text-accent-gray-bolder, #172B4D);
+  line-height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  min-height: 24px;
+}
+
+.checklist-collapse-button:hover {
+  background-color: var(--ds-background-neutral-hovered, rgba(9, 30, 66, 0.08));
+}
+
+.checklist-collapse-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--ds-border-focused, #388BFF);
+}

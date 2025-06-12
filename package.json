@@ -1,0 +1,24 @@
+{
+  "name": "trello-checklist-collapser",
+  "version": "1.0.0",
+  "description": "Chrome extension to collapse and expand Trello checklists",
+  "main": "content.js",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.22.5",
+    "@testing-library/dom": "^9.3.1",
+    "@testing-library/jest-dom": "^5.16.5",
+    "jest": "^29.5.0",
+    "jest-environment-jsdom": "^29.5.0"
+  },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "setupFilesAfterEnv": ["./jest.setup.js"],
+    "moduleNameMapper": {
+      "\\.(css|less|scss|sass)$": "<rootDir>/test/__mocks__/styleMock.js"
+    }
+  }
+}

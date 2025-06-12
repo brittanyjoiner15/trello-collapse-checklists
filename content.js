@@ -123,6 +123,39 @@ async function applyCollapseState(checklist, collapseButton, itemsContainer, add
   }
 }
 
+// Check if all checklists are in the same state (all collapsed or all expanded)
+async function checkAllChecklistsState() {
+  const checklists = document.querySelectorAll('[data-testid="checklist-section"]');
+  let allCollapsed = true;
+  let allExpanded = true;
+
+  for (const checklist of checklists) {
+    const key = getChecklistKey(checklist);
+    const isCollapsed = await loadCollapseState(key);
+    
+    if (isCollapsed) {
+      allExpanded = false;
+    } else {
+      allCollapsed = false;
+    }
+
+    // If we find both collapsed and expanded, we can stop checking
+    if (!allCollapsed && !allExpanded) break;
+  }
+
+  const collapseAllButton = document.querySelector('.collapse-all-button');
+  if (collapseAllButton) {
+    if (allCollapsed) {
+      collapseAllButton.innerHTML = 'Expand All ▶';
+    } else if (allExpanded) {
+      collapseAllButton.innerHTML = 'Collapse All ▼';
+    } else {
+      // Mixed state - show the more common action
+      collapseAllButton.innerHTML = 'Collapse All ▼';
+    }
+  }
+}
+
 function addCollapseAllButton() {
   // Only add if it doesn't exist yet
   if (!document.querySelector('.collapse-all-button')) {
@@ -137,9 +170,9 @@ function addCollapseAllButton() {
       collapseAllButton.addEventListener('click', async () => {
         await trackButtonClick();
         const isCollapsed = collapseAllButton.innerHTML.includes('▼');
-        const newState = isCollapsed;
-        await setAllChecklistsState(newState);
-        collapseAllButton.innerHTML = isCollapsed ? 'Expand All ▶' : 'Collapse All ▼';
+        await setAllChecklistsState(isCollapsed);
+        // Force a recheck of states after a short delay to ensure UI is in sync
+        setTimeout(() => checkAllChecklistsState(), 100);
       });
       
       firstChecklistContainer.parentNode.insertBefore(collapseAllButton, firstChecklistContainer);
@@ -149,17 +182,35 @@ function addCollapseAllButton() {
 
 async function setAllChecklistsState(collapsed) {
   const checklists = document.querySelectorAll('[data-testid="checklist-section"]');
+  const updates = [];
+
   for (const checklist of checklists) {
     const collapseButton = checklist.querySelector('.checklist-collapse-button');
-    const itemsContainer = checklist.querySelector('.FBCO2s6thAjoEx');
+    const itemsContainer = checklist.querySelector('[data-testid="checklist-items"]');
     const addItemForm = checklist.querySelector('.N5YqpPOcg1ZKKO');
+    const key = getChecklistKey(checklist);
     
     if (collapseButton && itemsContainer) {
+      // First save the state
+      updates.push(saveCollapseState(key, collapsed));
+      
+      // Then update UI
       itemsContainer.style.display = collapsed ? 'none' : '';
       if (addItemForm) addItemForm.style.display = collapsed ? 'none' : '';
       collapseButton.innerHTML = collapsed ? '▶' : '▼';
-      const key = getChecklistKey(checklist);
-      saveCollapseState(key, collapsed);
+    }
+  }
+
+  // Wait for all state updates to complete
+  await Promise.all(updates);
+  
+  // Update collapse-all button state
+  const collapseAllButton = document.querySelector('.collapse-all-button');
+  if (collapseAllButton) {
+    if (collapsed) {
+      collapseAllButton.innerHTML = 'Expand All ▶';
+    } else {
+      collapseAllButton.innerHTML = 'Collapse All ▼';
     }
   }
 }
@@ -186,22 +237,20 @@ function addCollapseButtons() {
           e.preventDefault();
           e.stopPropagation();
 
-          const isCollapsed = itemsContainer.style.display === 'none';
+          // Toggle based on current state
           const key = getChecklistKey(checklist);
+          const currentState = await loadCollapseState(key);
+          const newState = !currentState;
 
-          if (isCollapsed) {
-            itemsContainer.style.display = '';
-            if (addItemForm) addItemForm.style.display = '';
-            collapseButton.innerHTML = '▼';
-            saveCollapseState(key, false);
+          // Update UI
+          itemsContainer.style.display = newState ? 'none' : '';
+          if (addItemForm) addItemForm.style.display = newState ? 'none' : '';
+          collapseButton.innerHTML = newState ? '▶' : '▼';
+
+          // Save new state
+          await saveCollapseState(key, newState);
           await trackButtonClick();
-          } else {
-            itemsContainer.style.display = 'none';
-            if (addItemForm) addItemForm.style.display = 'none';
-            collapseButton.innerHTML = '▶';
-            saveCollapseState(key, true);
-          await trackButtonClick();
-          }
+          await checkAllChecklistsState();
         });
 
         // Insert after the title
@@ -212,6 +261,9 @@ function addCollapseButtons() {
       }
     }
   });
+
+  // Check initial state of all checklists
+  checkAllChecklistsState();
 }
 
 // Run initially and set up observer
@@ -240,3 +292,10 @@ observer.observe(document.body, {
   childList: true,
   subtree: true
 });
+
+// Export functions for testing
+module.exports = {
+  getChecklistKey,
+  setAllChecklistsState,
+  checkAllChecklistsState
+};

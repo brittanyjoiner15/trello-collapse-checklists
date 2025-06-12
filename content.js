@@ -45,8 +45,8 @@ async function trackButtonClick() {
       });
     });
 
-    // Show popup every 10 clicks
-    if (currentCount % 10 === 0) {
+    // Show popup every 25 clicks
+    if (currentCount % 25 === 0) {
       await showSupportPopup();
     }
   } catch (error) {
@@ -132,7 +132,7 @@ async function checkAllChecklistsState() {
   for (const checklist of checklists) {
     const key = getChecklistKey(checklist);
     const isCollapsed = await loadCollapseState(key);
-    
+
     if (isCollapsed) {
       allExpanded = false;
     } else {
@@ -166,7 +166,7 @@ function addCollapseAllButton() {
       collapseAllButton.innerHTML = 'Collapse All ▼';
       collapseAllButton.title = 'Collapse/Expand All Checklists';
       collapseAllButton.setAttribute('type', 'button');
-      
+
       collapseAllButton.addEventListener('click', async () => {
         await trackButtonClick();
         const isCollapsed = collapseAllButton.innerHTML.includes('▼');
@@ -174,7 +174,7 @@ function addCollapseAllButton() {
         // Force a recheck of states after a short delay to ensure UI is in sync
         setTimeout(() => checkAllChecklistsState(), 100);
       });
-      
+
       firstChecklistContainer.parentNode.insertBefore(collapseAllButton, firstChecklistContainer);
     }
   }
@@ -189,11 +189,11 @@ async function setAllChecklistsState(collapsed) {
     const itemsContainer = checklist.querySelector('[data-testid="checklist-items"]');
     const addItemForm = checklist.querySelector('.N5YqpPOcg1ZKKO');
     const key = getChecklistKey(checklist);
-    
+
     if (collapseButton && itemsContainer) {
       // First save the state
       updates.push(saveCollapseState(key, collapsed));
-      
+
       // Then update UI
       itemsContainer.style.display = collapsed ? 'none' : '';
       if (addItemForm) addItemForm.style.display = collapsed ? 'none' : '';
@@ -203,7 +203,7 @@ async function setAllChecklistsState(collapsed) {
 
   // Wait for all state updates to complete
   await Promise.all(updates);
-  
+
   // Update collapse-all button state
   const collapseAllButton = document.querySelector('.collapse-all-button');
   if (collapseAllButton) {

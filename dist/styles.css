@@ -1,0 +1,169 @@
+/* Checklist collapse button styles */
+.collapse-all-button {
+  margin: 12px 0;
+  padding: 8px 16px;
+  color: #ffffff !important;
+  background: linear-gradient(135deg, #0079bf 0%, #1f8ace 100%);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(9, 30, 66, 0.08);
+}
+
+.collapse-all-button:hover {
+  background: linear-gradient(135deg, #0067a3 0%, #1a75b5 100%);
+  box-shadow: 0 4px 8px rgba(9, 30, 66, 0.12);
+  transform: translateY(-1px);
+}
+
+.collapse-all-button:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(9, 30, 66, 0.08);
+}
+
+.checklist-collapse-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 4px;
+  margin: 0 4px;
+  border-radius: 3px;
+  color: dodgerblue;
+  line-height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  min-height: 24px;
+}
+
+.checklist-collapse-button:hover {
+  color: dodgerblue;
+}
+
+
+.checklist-collapse-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--ds-border-focused, #388BFF);
+}
+
+/* Popup styles */
+.popup-body {
+  width: 300px;
+  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  text-align: center;
+  background: linear-gradient(135deg, #F0F8FF 0%, #ffffff 100%);
+}
+
+.demo-gif {
+  width: 100%;
+  border-radius: 8px;
+  margin: 10px 0 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  color: #5E6C84;
+  font-size: 20px;
+  cursor: pointer;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  padding: 0;
+  transition: all 0.2s ease;
+}
+
+.close-button:hover {
+  background: rgba(9, 30, 66, 0.08);
+  color: #172B4D;
+}
+
+.popup-title {
+  font-size: 20px;
+  color: #172B4D;
+  margin-bottom: 15px;
+}
+
+
+.main-cta {
+  display: inline-block;
+  padding: 12px 20px;
+  background-color: dodgerblue;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+  margin-bottom: 20px;
+  width: 80%;
+}
+
+.main-cta:hover {
+  background-color: #E4E6E9;
+}
+
+.popup-text {
+  color: #5E6C84;
+  font-size: 14px;
+  margin-bottom: 15px;
+  line-height: 1.4;
+}
+
+.free-support {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 15px;
+}
+
+.social-button {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 16px;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background-color 0.2s;
+  font-size: 14px;
+}
+
+.youtube {
+  background-color: #FF0000;
+  color: #F4F5F7;
+}
+
+.newsletter {
+  background-color: #FFC107;
+  color: #F4F5F7;
+}
+
+.social-button:hover {
+  background-color: #E4E6E9;
+}
+
+.social-button i {
+  margin-right: 6px;
+}
+
+.feedback-link {
+  color: #5E6C84;
+  font-size: 12px;
+  margin-top: 15px;
+  margin-bottom: 5px;
+  font-style: italic;
+}

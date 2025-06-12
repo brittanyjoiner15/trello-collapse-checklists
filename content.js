@@ -14,6 +14,73 @@ function getChecklistKey(checklist) {
   return `trello-checklist-state-${cardId}-${checklistId}-${title}`;
 }
 
+// Track button clicks and show popup when needed
+async function trackButtonClick() {
+  try {
+    // Check if extension context is still valid
+    if (!chrome.runtime) {
+      console.log('Extension context invalidated, reloading page...');
+      window.location.reload();
+      return;
+    }
+
+    const data = await new Promise((resolve, reject) => {
+      chrome.storage.sync.get(['buttonClickCount'], (result) => {
+        if (chrome.runtime.lastError) {
+          reject(chrome.runtime.lastError);
+          return;
+        }
+        resolve(result);
+      });
+    });
+
+    const currentCount = (data.buttonClickCount || 0) + 1;
+    await new Promise((resolve, reject) => {
+      chrome.storage.sync.set({ buttonClickCount: currentCount }, () => {
+        if (chrome.runtime.lastError) {
+          reject(chrome.runtime.lastError);
+          return;
+        }
+        resolve();
+      });
+    });
+
+    // Show popup every 10 clicks
+    if (currentCount % 10 === 0) {
+      await showSupportPopup();
+    }
+  } catch (error) {
+    console.error('Error tracking button click:', error);
+    // If we get an invalidated context error, reload the page
+    if (error.message.includes('Extension context invalidated')) {
+      window.location.reload();
+    }
+  }
+}
+
+// Show the extension popup
+async function showSupportPopup() {
+  try {
+    if (!chrome.runtime) {
+      throw new Error('Extension context invalidated');
+    }
+    await new Promise((resolve, reject) => {
+      chrome.runtime.sendMessage({ action: 'openPopup' }, (response) => {
+        if (chrome.runtime.lastError) {
+          reject(chrome.runtime.lastError);
+          return;
+        }
+        resolve(response);
+      });
+    });
+  } catch (error) {
+    console.error('Error showing popup:', error);
+    if (error.message.includes('Extension context invalidated')) {
+      window.location.reload();
+    }
+  }
+}
+
 // Save collapse state to Chrome storage
 function saveCollapseState(key, isCollapsed) {
   chrome.storage.sync.set({ [key]: isCollapsed }, () => {
@@ -68,6 +135,7 @@ function addCollapseAllButton() {
       collapseAllButton.setAttribute('type', 'button');
       
       collapseAllButton.addEventListener('click', async () => {
+        await trackButtonClick();
         const isCollapsed = collapseAllButton.innerHTML.includes('▼');
         const newState = isCollapsed;
         await setAllChecklistsState(newState);
@@ -114,7 +182,7 @@ function addCollapseButtons() {
         collapseButton.title = 'Collapse/Expand Checklist';
         collapseButton.setAttribute('type', 'button');
 
-        collapseButton.addEventListener('click', (e) => {
+        collapseButton.addEventListener('click', async (e) => {
           e.preventDefault();
           e.stopPropagation();
 
@@ -126,11 +194,13 @@ function addCollapseButtons() {
             if (addItemForm) addItemForm.style.display = '';
             collapseButton.innerHTML = '▼';
             saveCollapseState(key, false);
+          await trackButtonClick();
           } else {
             itemsContainer.style.display = 'none';
             if (addItemForm) addItemForm.style.display = 'none';
             collapseButton.innerHTML = '▶';
             saveCollapseState(key, true);
+          await trackButtonClick();
           }
         });
 

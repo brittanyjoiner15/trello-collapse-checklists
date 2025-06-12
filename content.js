@@ -56,8 +56,49 @@ async function applyCollapseState(checklist, collapseButton, itemsContainer, add
   }
 }
 
+function addCollapseAllButton() {
+  // Only add if it doesn't exist yet
+  if (!document.querySelector('.collapse-all-button')) {
+    const firstChecklistContainer = document.querySelector('[data-testid="checklist-container"]');
+    if (firstChecklistContainer) {
+      const collapseAllButton = document.createElement('button');
+      collapseAllButton.className = 'collapse-all-button';
+      collapseAllButton.innerHTML = 'Collapse All ▼';
+      collapseAllButton.title = 'Collapse/Expand All Checklists';
+      collapseAllButton.setAttribute('type', 'button');
+      
+      collapseAllButton.addEventListener('click', async () => {
+        const isCollapsed = collapseAllButton.innerHTML.includes('▼');
+        const newState = isCollapsed;
+        await setAllChecklistsState(newState);
+        collapseAllButton.innerHTML = isCollapsed ? 'Expand All ▶' : 'Collapse All ▼';
+      });
+      
+      firstChecklistContainer.parentNode.insertBefore(collapseAllButton, firstChecklistContainer);
+    }
+  }
+}
+
+async function setAllChecklistsState(collapsed) {
+  const checklists = document.querySelectorAll('[data-testid="checklist-section"]');
+  for (const checklist of checklists) {
+    const collapseButton = checklist.querySelector('.checklist-collapse-button');
+    const itemsContainer = checklist.querySelector('.FBCO2s6thAjoEx');
+    const addItemForm = checklist.querySelector('.N5YqpPOcg1ZKKO');
+    
+    if (collapseButton && itemsContainer) {
+      itemsContainer.style.display = collapsed ? 'none' : '';
+      if (addItemForm) addItemForm.style.display = collapsed ? 'none' : '';
+      collapseButton.innerHTML = collapsed ? '▶' : '▼';
+      const key = getChecklistKey(checklist);
+      saveCollapseState(key, collapsed);
+    }
+  }
+}
+
 function addCollapseButtons() {
-  const checklists = document.querySelectorAll('[data-testid="checklist-container"]');
+  addCollapseAllButton();
+  const checklists = document.querySelectorAll('[data-testid="checklist-section"]');
 
   checklists.forEach(checklist => {
     // Only add button if it doesn't already exist

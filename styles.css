@@ -1,5 +1,33 @@
 /* Checklist collapse button styles */
-[data-testid="checklist-container"] .checklist-collapse-button {
+.collapse-all-button {
+  margin: 12px 0;
+  padding: 8px 16px;
+  color: #ffffff !important;
+  background: linear-gradient(135deg, #0079bf 0%, #1f8ace 100%);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(9, 30, 66, 0.08);
+}
+
+.collapse-all-button:hover {
+  background: linear-gradient(135deg, #0067a3 0%, #1a75b5 100%);
+  box-shadow: 0 4px 8px rgba(9, 30, 66, 0.12);
+  transform: translateY(-1px);
+}
+
+.collapse-all-button:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(9, 30, 66, 0.08);
+}
+
+.checklist-collapse-button {
   background: none;
   border: none;
   cursor: pointer;
